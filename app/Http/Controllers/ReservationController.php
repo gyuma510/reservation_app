@@ -7,8 +7,11 @@ use App\Models\Room;
 use App\Models\Plan;
 use App\Models\FramePlan;
 use App\Models\Reservation;
+use App\Mail\ReservationSendmail;
 use Illuminate\Http\Request;
+use App\Http\Requests\ReservationController\StoreRequest;
 use Illuminate\Http\RedirectResponse;
+use Carbon\Carbon;
 
 class ReservationController extends Controller
 {
@@ -46,48 +49,64 @@ class ReservationController extends Controller
 
     }
 
-    public function create($plan_id, $frame_id)
+    public function create(Request $request, $plan_id, $room_id)
     {
         $plan = Plan::find($plan_id);
-        $frame = Frame::find($frame_id);
+        $frame = Frame::where('room_id', $room_id)->where('date', $request->date)->first();
+        $data = [
+            'plan_id' => $plan_id,
+            'frame_id' => $frame->id,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'message' => $request->message,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+        ];
 
-        return view('reservations.create', compact('plan', 'frame'));
+        return view('reservations.create', compact('plan', 'frame', 'data'));
     }
 
-    public function confirm(Request $request): View|RedirectResponse
-    {        
+    public function confirm(StoreRequest $request)
+    {
+        $data = $request->all();
         $plan = Plan::findOrFail($data['plan_id']);
         $frame = Frame::findOrFail($data['frame_id']);
+        $framePlan = $frame->plans()->where('plan_id', $plan->id)->first();
+        $framePlanId = $framePlan ? $framePlan->id : null;        
     
-        $startDate = $data['start_date'];
-        $endDate = $data['end_date'];
+        $startDate = Carbon::parse($data['start_date']);
+        $endDate = Carbon::parse($data['end_date']);
     
         $frames = Frame::where('date', '>=', $startDate)
             ->where('date', '<=', $endDate)
             ->get();
     
         // 登録されていない日付または予約不可のフレームが含まれている場合はエラーを生成
-        if ($frames->contains('count', 0)) {
+        if ($frames->contains('number', 0)) {
             return redirect()->back()->withErrors(['message' => '予約不可能な日にちが含まれています。'])->withInput();
         }
     
-        $totalPrice = Frame::where('date', '>=', $startDate)
-            ->where('date', '<=', $endDate)
-            ->join('frame_plans', 'frames.id', '=', 'frame_plans.frame_id')
-            ->sum('frame_plans.price');
-    
+        $pricePerDay = $frame->plans()->where('plan_id', $plan->id)->value('price');
+        $totalDays = $endDate->diffInDays($startDate);
+        $totalPrice = $pricePerDay * $totalDays;
+        
         return view('reservations.confirm', [
             'plan' => $plan,
             'frame' => $frame,
             'data' => $data,
             'totalPrice' => $totalPrice,
+            'frame_plan_id' => $framePlanId,
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreRequest $request)
     {
         $data = $request->all();
-    
         $plan = Plan::findOrFail($data['plan_id']);
         $frame = Frame::findOrFail($data['frame_id']);
         $frames = Frame::where('date', '>=', $request->input('start_date'))
@@ -95,39 +114,52 @@ class ReservationController extends Controller
             ->get();
             
             foreach ($frames as $frame) {
-                if ($frame->count === 0) {
+                if ($frame->number === 0) {
                     return redirect()->route('reservations.create', ['plan' => $plan, 'frame' => $frame])->withErrors(['message' => 'Selected frame is fully booked.'])->withInput();
                 }
             }
 
             $startDate = $data['start_date'];
             $endDate = $data['end_date'];
-        
-            $frames = Frame::where('date', '>=', $startDate)
+            
+            $selectedFrame = Frame::where('date', '>=', $startDate)
                 ->where('date', '<=', $endDate)
-                ->get();
-        
-            if ($frames->isEmpty() || $frames->contains('count', 0)) {
+                ->first();
+            
+            if (!$selectedFrame) {
                 return redirect()->back()->withErrors(['message' => '予約不可能な日にちが含まれています。'])->withInput();
             }
-    
-        $reservation = new Reservation();
-        $reservation->name = $data['name'];
-        $reservation->email = $data['email'];
-        $reservation->address = $data['address'];
-        $reservation->phone = $data['phone'];
-        $reservation->message = $data['message'];
-        $reservation->start_date = $data['start_date'];
-        $reservation->end_date = $data['end_date'];
-        $reservation->frame_plan_id = $frame->framePlan->first()->id;
-        $reservation->save();
-    
-        foreach ($frames as $frame) {
-            $frame->count -= 1;
-            $frame->save();
-        }
+            
+            if ($selectedFrame->number === 0) {
+                return redirect()->route('reservations.create', ['plan' => $plan, 'frame' => $selectedFrame])->withErrors(['message' => 'Selected frame is fully booked.'])->withInput();
+            }
+            
+            $framePlanId = $selectedFrame->plans()->where('plan_id', $plan->id)->pluck('frame_plans.id')->first();
+            
+            $reservation = new Reservation();
+            $reservation->first_name = $data['first_name'];
+            $reservation->last_name = $data['last_name'];
+            $reservation->email = $data['email'];
+            $reservation->address = $data['address'];
+            $reservation->phone = $data['phone'];
+            $reservation->message = $data['message'];
+            $reservation->start_date = $data['start_date'];
+            $reservation->end_date = $data['end_date'];
+            $reservation->frame_plan_id = $framePlanId;
+            $reservation->save();
+            
+            $selectedFrame->number -= 1;
+            $selectedFrame->save();
 
-        return redirect()->route('reservations.complete');
+            // 重複予約対策
+            $request->session()->regenerateToken();
+
+            // 予約完了メール
+            \Mail::to($request->email)->send(new ReservationSendmail($reservation));
+            \Mail::to('yumagoto287@gmail.com')->send(new ReservationSendmail($reservation));
+            
+            return redirect()->route('reservations.complete');
+            
     }
 
     public function complete()

@@ -21,21 +21,15 @@
             <td class = "align-middle">{{ $contact->content }}</td>
             <td class = "align-middle">{{ date('Y/m/d  H:m', strtotime($contact->created_at)) }}</td>
             @if ($contact->status)
-                <form action="{{ route('contacts.status', $contact->id) }}" method="post">
+                <form action = "{{ route('contacts.status', $contact->id) }}" method = "post">
                     @csrf
                     @method('DELETE')
-                    <td class="align-middle"><input type="submit" value="対応済み" class="btn btn-success" onclick="return confirm('未対応に変更しますか？')"></td>
-                </form>
-            @elseif ($contact->status && $contact->status->isProcessing())
-                <form action="{{ route('contacts.status', $contact->id) }}" method="post">
-                    @csrf
-                    @method('DELETE')
-                    <td class="align-middle"><input type="submit" value="未対応" class="btn btn-primary" onclick="return confirm('対応済みに変更しますか？')"></td>
+                    <td class = "align-middle"><input type = "submit" value = "対応済み" class = "btn btn-outline-success" onclick="return confirm('未対応に変更しますか？')"></td>
                 </form>
             @else
-                <form action="{{ route('contacts.status', $contact->id) }}" method="post">
+                <form action = "{{ route('contacts.status', $contact->id) }}" method = "post">
                     @csrf
-                    <td class="align-middle"><input type="submit" value="未対応" class="btn btn-outline-success"></td>
+                    <td class = "align-middle"><input type = "submit" value = "未対応" class = "btn btn-danger" onclick="return confirm('対応済みに変更しますか？')"></td>
                 </form>
             @endif
         </tr>

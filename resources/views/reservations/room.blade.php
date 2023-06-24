@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container my-5">
-    <h1 class="text-center mb-5">客室一覧</h1>
+    <h3 class="text-center mb-5">客室一覧</h3>
 
     <div class="card-deck">
         @foreach ($rooms as $room)

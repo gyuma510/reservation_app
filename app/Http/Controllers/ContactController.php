@@ -12,7 +12,7 @@ class ContactController extends Controller
     {
         $contacts = Contact::simplePaginate(10);
 
-        return view('contacts.index', compact('contacts'));
+        return view('admin.contacts.index', compact('contacts'));
     }
 
     public function create()
@@ -37,6 +37,6 @@ class ContactController extends Controller
     {
         $contact = Contact::find($id);
 
-        return view('contacts.show', compact('contact'));
+        return view('admin.contacts.show', compact('contact'));
     }
 }

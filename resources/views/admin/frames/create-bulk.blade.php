@@ -22,7 +22,7 @@
                     </div>
                     <div class="form-group">
                         <label for="start_date">開始日</label>
-                        <input id="start_date" name="start_date" class="form-control" type="date">
+                        <input id="start_date" name="start_date" class="form-control @error('start_date') is-invalid @enderror" type="date">
                         @error('start_date')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -31,7 +31,7 @@
                     </div>
                     <div class="form-group">
                         <label for="end_date">終了日</label>
-                        <input id="end_date" name="end_date" class="form-control" type="date">
+                        <input id="end_date" name="end_date" class="form-control @error('end_date') is-invalid @enderror" type="date">
                         @error('end_date')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -42,6 +42,7 @@
                         <label for="number">予約枠の数</label>
                         <input id="number" type="number" max="10"
                             class="form-control @error('number') is-invalid @enderror" name="number"
+                            placeholder="例:10(半角数字で入力)"
                             value="{{ old('number') }}" required autocomplete="number" autofocus>
                         @error('number')
                             <span class="invalid-feedback" role="alert">

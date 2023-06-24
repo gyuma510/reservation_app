@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\EmailChangeController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\FrameController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,8 +31,6 @@ Auth::routes(['register' => false]);
 // パスワードリセット
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('auth.passwords.reset');
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
-// メールアドレス変更
-Route::post('/password/email', [ResetPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -40,13 +40,11 @@ Route::prefix('reservations')->name('reservations.')->controller(ResrevationCont
     Route::get('access', [ReservationController::class, 'access'])->name('access');
     Route::get('room', [ReservationController::class, 'room'])->name('room');
     Route::get('', [ReservationController::class, 'index'])->name('index');
-    Route::get('{id}', [ReservationController::class, 'show'])->name('show');
-    Route::get('create/{plan_id}/{frame_id}', [ReservationController::class, 'create'])->name('create');
+    Route::get('create/{plan_id}/{room_id}', [ReservationController::class, 'create'])->name('create');
     Route::post('confirm', [ReservationController::class, 'confirm'])->name('confirm');
     Route::post('store', [ReservationController::class, 'store'])->name('store');
-    Route::get('complete', function () {
-        return view('complete');
-    })->name('complete');
+    Route::get('complete', [ReservationController::class, 'complete'])->name('complete');
+    Route::get('{id}', [ReservationController::class, 'show'])->name('show');
 });
 
 // 空室カレンダー
@@ -59,11 +57,16 @@ Route::get('/contacts/create', [ContactController::class, 'create'])->name('cont
 Route::post('/contacts/store', [ContactController::class, 'store'])->name('contacts.store');
 Route::get('admin/contacts/{id}', [ContactController::class, 'show'])->name('admin.contacts.show');
 
+// 管理者(admin)
 Route::group(['middleware' => 'auth', 'prefix' => 'admin'], function () {
     // 管理者ログイン後
     Route::get('dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
+
+    // メールアドレス変更
+    Route::get('email/edit', [EmailChangeController::class, 'edit'])->name('email.edit');
+    Route::post('email/update', [EmailChangeController::class, 'update'])->name('email.update');
 
     // お問い合わせステータス
     Route::match(['post', 'delete'], 'contacts/{contact}/status', [StatusController::class, 'update'])->name('contacts.status');
@@ -88,4 +91,11 @@ Route::group(['middleware' => 'auth', 'prefix' => 'admin'], function () {
     Route::get('plans/edit/{id}', [PlanController::class, 'edit'])->name('plans.edit');
     Route::put('plans/update/{id}', [PlanController::class, 'update'])->name('plans.update');
     Route::delete('plans/destroy/{id}', [PlanController::class, 'destroy'])->name('plans.destroy');
+
+    // 宿泊予約管理関係
+    Route::get('managements', [ManagementController::class, 'index'])->name('managements.index');
+    Route::get('managements/{id}', [ManagementController::class, 'show'])->name('managements.show');
+    Route::get('managements/{id}/cancel', [ManagementController::class, 'cancel'])->name('managements.cancel');
+    Route::get('managements/{id}/create_memo', [ManagementController::class, 'createMemo'])->name('managements.create_memo');
+    Route::post('managements/{id}/store_memo', [ManagementController::class, 'storeMemo'])->name('managements.store_memo');
 });

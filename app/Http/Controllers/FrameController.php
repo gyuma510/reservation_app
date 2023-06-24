@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\FrameController\BulkStoreRequest;
 use App\Http\Requests\FrameController\StoreRequest;
 use App\Http\Requests\FrameController\UpdateRequest;
 use App\Models\Frame;
@@ -14,9 +15,17 @@ class FrameController extends Controller
     public function index()
     {
         $frames = Frame::all();
-
-        return view('admin.frames.index', compact('frames'));
+        $framesGroupedByRoom = $frames->groupBy(function ($frame) {
+            return $frame->room->room_name;
+        });
+    
+        $framesGroupedByRoomSortedByDate = $framesGroupedByRoom->map(function ($roomFrames) {
+            return $roomFrames->sortBy('date');
+        });
+    
+        return view('admin.frames.index', compact('framesGroupedByRoomSortedByDate'));
     }
+    
 
     public function create()
     {
@@ -33,7 +42,7 @@ class FrameController extends Controller
         $frame->number = $request->number;
         $frame->save();
     
-        return redirect()->route('frames.index')->with('flashmessage', '予約枠を登録しました');
+        return redirect()->route('frames.index')->with('flash_message', '予約枠を登録しました');
     }
 
     public function createBulk()
@@ -42,7 +51,7 @@ class FrameController extends Controller
         return view('admin.frames.create-bulk', compact('rooms'));
     }
 
-    public function storeBulk(Request $request)
+    public function storeBulk(BulkStoreRequest $request)
     {
         $room_id = $request->input('room_id');
         $start_date = $request->input('start_date');
@@ -58,6 +67,14 @@ class FrameController extends Controller
             $current_date->addDay();
         }
     
+        $existingFrame = Frame::where('room_id', $room_id)
+                                ->whereIn('date', $dates)
+                                ->first();
+    
+        if ($existingFrame) {
+            return back()->with('flash_delete', '指定された日付の予約枠がすでに存在します。');
+        }                                
+    
         $frames = [];
         foreach ($dates as $date) {
             $frames[] = [
@@ -69,8 +86,9 @@ class FrameController extends Controller
     
         Frame::insert($frames);
     
-        return redirect()->route('frames.index')->with('success', '予約枠が一括作成されました');
+        return redirect()->route('frames.index')->with('flash_message', '予約枠が一括作成されました');
     }
+    
     
 
     public function edit(string $id)

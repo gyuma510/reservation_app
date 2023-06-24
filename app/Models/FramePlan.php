@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class FramePlan extends Pivot
 {
     use HasFactory;
+    protected $table = 'frame_plans';
     protected $guarded = ['id', 'frame_id', 'plan_id'];
 
     public function plan()

@@ -33,6 +33,7 @@
                 <label for="number">予約枠の数</label>
                 <input id="number" type="number" max="10"
                     class="form-control @error('number') is-invalid @enderror" name="number"
+                    placeholder="例:10(半角数字で入力)"
                     value="{{ $frame->number }}" required autocomplete="number" autofocus>
                 @error('number')
                     <span class="invalid-feedback" role="alert">

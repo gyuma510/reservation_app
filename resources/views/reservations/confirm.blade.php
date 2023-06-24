@@ -4,7 +4,7 @@
     <div class="container my-5">
         <h1 class="text-center">予約内容確認</h1>
         <p class="text-center">以下の内容で予約を確定しますか？</p>
-        <form method="POST" action="{{ route('store') }}">
+        <form method="POST" action="{{ route('reservations.store') }}">
             @csrf
             <input type="hidden" name="plan_id" value="{{ $plan->id }}">
             <input type="hidden" name="frame_id" value="{{ $frame->id }}">
@@ -24,13 +24,23 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
-            <div class="mb-3">
-                <label for="name" class="form-label">氏名</label>
-                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name"
-                    value="{{ $data['name'] }}" readonly>
-                @error('name')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="first_name" class="form-label">姓</label>
+                    <input type="text" class="form-control @error('first_name') is-invalid @enderror" id="first_name" name="first_name"
+                        value="{{ $data['first_name'] }}" readonly>
+                    @error('first_name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="last_name" class="form-label">名</label>
+                    <input type="text" class="form-control @error('last_name') is-invalid @enderror" id="last_name" name="last_name"
+                        value="{{ $data['last_name'] }}" readonly>
+                    @error('last_name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">メールアドレス</label>
@@ -81,7 +91,7 @@
                 @enderror
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn-primary">予約を確定する</button>
+                <button type="submit" class="btn btn-primary" onclick="return confirm('予約を確定しますか？')">予約を確定する</button>
                 <button type="button" class="btn btn-secondary" onclick="history.back()">戻る</button>
             </div>
         </form>

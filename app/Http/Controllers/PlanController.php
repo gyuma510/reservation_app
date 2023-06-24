@@ -21,7 +21,7 @@ class PlanController extends Controller
 
     public function create()
     {
-        $frames = Frame::all();
+        $frames = Frame::orderBy('date')->get();
 
         return view('admin.plans.create', compact('frames'));
     }
@@ -55,16 +55,20 @@ class PlanController extends Controller
 
     public function show(string $id)
     {
-        $plan = Plan::find($id);
+        $plan = Plan::with(['frames' => function ($query) {
+            $query->orderBy('date');
+        }])->find($id);
+    
         return view('admin.plans.show', compact('plan'));
-    }
+    }    
 
     public function edit(string $id)
     {
         $plan = Plan::find($id);
-        $frames = Frame::all();
+        $frames = Frame::with('plans')->orderBy('date')->get();
+    
         return view('admin.plans.edit', compact('plan', 'frames'));
-    }
+    }    
 
     public function update(UpdateRequest $request, string $id)
     {

@@ -1,5 +1,4 @@
 @extends('layouts.parent')
-
 @section('title', 'TOP')
 
 @section('content')

@@ -9,8 +9,8 @@ class ContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
-            'email' => ['required', 'email'],
+            'name'    => ['required'],
+            'email'   => ['required', 'email'],
             'content' => ['required', 'max:255'],
         ];
     }

@@ -12,13 +12,12 @@
                             @method('PUT')
 
                             <div class="form-group row">
-                                <label for="title"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('タイトル') }}</label>
-
+                                <label for="title" class="col-md-4 col-form-label text-md-right">プラン名<span class="badge bg-danger ml-1">必須</span></label>
                                 <div class="col-md-6">
                                     <input id="title" type="text"
                                         class="form-control @error('title') is-invalid @enderror" name="title"
-                                        value="{{ old('title', $plan->title) }}" required autocomplete="title" autofocus>
+                                        placeholder="プラン名を入力" value="{{ old('title', $plan->title) }}"
+                                        required autocomplete="title" autofocus>
 
                                     @error('title')
                                         <span class="invalid-feedback" role="alert">
@@ -29,12 +28,11 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="description"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('詳細') }}</label>
-
+                                <label for="description" class="col-md-4 col-form-label text-md-right">プラン説明<span class="badge bg-danger ml-1">必須</span></label>
                                 <div class="col-md-6">
                                     <textarea id="description" type="text" class="form-control @error('description') is-invalid @enderror"
-                                        name="description" required autocomplete="description">{{ old('description', $plan->description) }}</textarea>
+                                        name="description" placeholder="プラン説明を入力"
+                                        required autocomplete="description">{{ old('description', $plan->description) }}</textarea>
 
                                     @error('description')
                                         <span class="invalid-feedback" role="alert">
@@ -45,8 +43,7 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="images"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('画像') }}</label>
+                                <label for="images" class="col-md-4 col-form-label text-md-right">写真1</label>
 
                                 <div class="col-md-6">
                                     <input id="images" type="file"
@@ -62,9 +59,7 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="images"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('画像') }}</label>
-
+                                <label for="images" class="col-md-4 col-form-label text-md-right">写真2</label>
                                 <div class="col-md-6">
                                     <input id="images" type="file"
                                         class="form-control-file @error('images.*') is-invalid @enderror" name="images[]"
@@ -79,9 +74,7 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="images"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('画像') }}</label>
-
+                                <label for="images" class="col-md-4 col-form-label text-md-right">写真3</label>
                                 <div class="col-md-6">
                                     <input id="images" type="file"
                                         class="form-control-file @error('images.*') is-invalid @enderror" name="images[]"
@@ -96,13 +89,12 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="min_price"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('プランの最小の値段') }}</label>
-
+                                <label for="min_price" class="col-md-4 col-form-label text-md-right">プランの最小の値段<span class="badge bg-danger ml-1">必須</span></label>
                                 <div class="col-md-6">
                                     <input id="min_price" type="number"
                                         class="form-control @error('min_price') is-invalid @enderror"
-                                        name="min_price" value="{{ old('min_price', $plan->min_price) }}"
+                                        name="min_price" placeholder="例:5000(半角数字で入力)"
+                                        value="{{ old('min_price', $plan->min_price) }}"
                                         required autocomplete="min_price">
 
                                     @error('min_price')
@@ -114,13 +106,12 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="max_price"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('プランの最大の値段') }}</label>
-
+                                <label for="max_price" class="col-md-4 col-form-label text-md-right">プランの最大の値段<span class="badge bg-danger ml-1">必須</span></label>
                                 <div class="col-md-6">
                                     <input id="max_price" type="number"
                                         class="form-control @error('max_price') is-invalid @enderror"
-                                        name="max_price" value="{{ old('max_price', $plan->max_price) }}"
+                                        name="max_price" placeholder="例:15000(半角数字で入力)"
+                                        value="{{ old('max_price', $plan->max_price) }}"
                                         required autocomplete="max_price">
 
                                     @error('max_price')
@@ -132,7 +123,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="start_date">{{ __('開始日') }}</label>
+                                <label for="start_date">開始日<span class="badge bg-danger ml-1">必須</span></label>
                                 <input id="start_date" type="date"
                                     class="form-control @error('start_date') is-invalid @enderror" name="start_date"
                                     value="{{ old('start_date', $plan->start_date) }}" autocomplete="start_date">
@@ -143,7 +134,7 @@
                                 @enderror
                             </div>
                             <div class="form-group">
-                                <label for="end_date">{{ __('終了日') }}</label>
+                                <label for="end_date">終了日<span class="badge bg-danger ml-1">必須</span></label>
                                 <input id="end_date" type="date"
                                     class="form-control @error('end_date') is-invalid @enderror" name="end_date"
                                     value="{{ old('end_date', $plan->end_date) }}" autocomplete="end_date">
@@ -155,15 +146,15 @@
                             </div>
                             @foreach ($frames as $frame)
                                 <div class="form-group row">
-                                    <label for="frame_price_{{ $frame->id }}"
-                                        class="col-md-4 col-form-label text-md-right">{{ __('予約枠ごとの値段') }}
-                                        {{ $frame->date }}</label>
-
+                                    <label for="frame_price_{{ $frame->id }}" class="col-md-4 col-form-label text-md-right">
+                                        予約枠ごとの値段{{ $frame->date }}<span class="badge bg-danger ml-1">必須</span>
+                                    </label>
                                     <div class="col-md-6">
                                         <input id="frame_price_{{ $frame->id }}" type="number"
                                             class="form-control @error('frame_prices.' . $frame->id) is-invalid @enderror"
-                                            name="frame_prices[{{ $frame->id }}]"
-                                            value="{{ old('frame_prices.' . $frame->id) }}" required
+                                            name="frame_prices[{{ $frame->id }}]" placeholder="例:8000(半角数字で入力)"
+                                            value="{{ old('frame_prices.' . $frame->id, $frame->plans->firstWhere('id', $plan->id)->pivot->price ?? '') }}"
+ required
                                             autocomplete="frame_prices.{{ $frame->id }}">
 
                                         @error('frame_prices.' . $frame->id)
@@ -176,14 +167,14 @@
                             @endforeach
                             <div class="d-flex justify-content-center mt-3">
                                 <button type="submit" class="btn btn-primary">
-                                    {{ __('更新') }}
+                                    更新
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center mt-3">
-                    <a href="{{ route('plans.index') }}" class="btn btn-secondary">{{ __('宿泊プラン一覧へ戻る') }}</a>
+                    <a href="{{ route('plans.index') }}" class="btn btn-secondary">宿泊プラン一覧へ戻る</a>
                 </div>
             </div>
         </div>

@@ -1,5 +1,26 @@
 @extends('layouts.parent')
 @section('title', '予約完了')
 @section('content')
-    <p>予約が完了しました</p>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h2 class="text-center">予約完了</h2>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">予約が完了しました</h5>
+                    <p class="card-text">
+                        宿泊予約が正常に完了しました。詳細な情報は登録したメールアドレスに送信されました。メールを確認してください。
+                    </p>
+                    <div class="d-flex justify-content-center">
+                        <a href="{{ route('reservations.top') }}" class="btn btn-primary">トップに戻る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection

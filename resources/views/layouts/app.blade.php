@@ -7,11 +7,22 @@
     <title>宿泊予約サイト　管理者ページ</title>
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
-
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body>
+    @if (session('flash_message'))
+        <div class="flash_message text-center py-3 my-0" style="background-color: #ccffcc; color: #004d00;">
+            {{ session('flash_message') }}
+        </div>
+    @endif
+    @if (session('flash_delete'))
+        <div class="flash_message text-center py-3 my-0" style="background-color: #ffcce5; color: #800033;">
+            {{ session('flash_delete') }}
+        </div>
+    @endif
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
@@ -42,13 +53,13 @@
                                     {{ Auth::user()->name }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('plans.index')}}">{{ __('宿泊プラン一覧') }}</a>
-                                    <a class="dropdown-item" href="{{ route('frames.index')}}">{{ __('予約枠一覧') }}</a>
-                                    <a class="dropdown-item" href="{{ route('admin.contacts.index')}}">{{ __('お問合せ一覧') }}</a>
-                                    <a class="dropdown-item" href="{{ route('reservations.index')}}" >{{ __('予約一覧') }}</a>
+                                    <a class="dropdown-item" href="{{ route('plans.index')}}">宿泊プラン一覧</a>
+                                    <a class="dropdown-item" href="{{ route('frames.index')}}">予約枠一覧</a>
+                                    <a class="dropdown-item" href="{{ route('admin.contacts.index')}}">お問合せ一覧</a>
+                                    <a class="dropdown-item" href="{{ route('managements.index')}}" >宿泊予約一覧</a>
                                     <div class="dropdown-divider"></div>
-                                    {{-- <a class="dropdown-item" href="{{ route('auth.passwords.reset', ['token' => $token]) }}" >{{ __('パスワード再設定') }}</a> --}}
-                                    <a class="dropdown-item" href="{{ route('password.email')}}" >{{ __('メールアドレス変更') }}</a>
+                                    <a class="dropdown-item" href="{{ url('password/reset') }}" >パスワード再設定</a>
+                                    <a class="dropdown-item" href="{{ route('email.edit')}}" >メールアドレス変更</a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault();
                                         document.getElementById('logout-form').submit();">
@@ -64,16 +75,6 @@
                 </div>
             </div>
         </nav>
-        @if (session('flash_message'))
-            <div class="flash_message bg-success text-center py-3 my-0">
-                {{ session('flash_message') }}
-            </div>
-        @endif
-        @if (session('flash_delete'))
-            <div class="flash_message bg-danger text-center py-3 my-0">
-                {{ session('flash_delete') }}
-            </div>
-        @endif
         <main class="py-4">
             @yield('content')
         </main>
