@@ -77,7 +77,7 @@ class ReservationController extends Controller
         $plan = Plan::findOrFail($data['plan_id']);
         $frame = Frame::findOrFail($data['frame_id']);
         $framePlan = $frame->plans()->where('plan_id', $plan->id)->first();
-        $framePlanId = $framePlan ? $framePlan->id : null;        
+        $framePlanId = $framePlan ? $framePlan->id : null;
     
         $startDate = Carbon::parse($data['start_date']);
         $endDate = Carbon::parse($data['end_date']);
@@ -85,10 +85,10 @@ class ReservationController extends Controller
         $frames = Frame::where('date', '>=', $startDate)
             ->where('date', '<=', $endDate)
             ->get();
-    
-        // 登録されていない日付または予約不可のフレームが含まれている場合はエラーを生成
-        if ($frames->contains('number', 0)) {
-            return redirect()->back()->withErrors(['message' => '予約不可能な日にちが含まれています。'])->withInput();
+
+        // 存在しない日付に書き換えた際のエラー
+        if ($framePlanId === null) {
+            return  back()->with('flash_delete', '予約不可能な日にちが含まれています。');
         }
     
         $pricePerDay = $frame->plans()->where('plan_id', $plan->id)->value('price');
@@ -113,53 +113,49 @@ class ReservationController extends Controller
             ->where('date', '<=', $request->input('end_date'))
             ->get();
             
-            foreach ($frames as $frame) {
-                if ($frame->number === 0) {
-                    return redirect()->route('reservations.create', ['plan' => $plan, 'frame' => $frame])->withErrors(['message' => 'Selected frame is fully booked.'])->withInput();
-                }
+        foreach ($frames as $frame) {
+            if ($frame->number === 0) {
+                return redirect()->route('reservations.create', ['plan' => $plan, 'frame' => $frame])->withErrors(['message' => 'Selected frame is fully booked.'])->withInput();
             }
+        }
 
-            $startDate = $data['start_date'];
-            $endDate = $data['end_date'];
-            
-            $selectedFrame = Frame::where('date', '>=', $startDate)
-                ->where('date', '<=', $endDate)
-                ->first();
-            
-            if (!$selectedFrame) {
-                return redirect()->back()->withErrors(['message' => '予約不可能な日にちが含まれています。'])->withInput();
-            }
-            
-            if ($selectedFrame->number === 0) {
-                return redirect()->route('reservations.create', ['plan' => $plan, 'frame' => $selectedFrame])->withErrors(['message' => 'Selected frame is fully booked.'])->withInput();
-            }
-            
-            $framePlanId = $selectedFrame->plans()->where('plan_id', $plan->id)->pluck('frame_plans.id')->first();
-            
-            $reservation = new Reservation();
-            $reservation->first_name = $data['first_name'];
-            $reservation->last_name = $data['last_name'];
-            $reservation->email = $data['email'];
-            $reservation->address = $data['address'];
-            $reservation->phone = $data['phone'];
-            $reservation->message = $data['message'];
-            $reservation->start_date = $data['start_date'];
-            $reservation->end_date = $data['end_date'];
-            $reservation->frame_plan_id = $framePlanId;
-            $reservation->save();
-            
-            $selectedFrame->number -= 1;
-            $selectedFrame->save();
+        $startDate = $data['start_date'];
+        $endDate = $data['end_date'];
 
-            // 重複予約対策
-            $request->session()->regenerateToken();
+        $selectedFrame = Frame::where('date', '>=', $startDate)
+            ->where('date', '<=', $endDate)
+            ->first();
 
-            // 予約完了メール
-            \Mail::to($request->email)->send(new ReservationSendmail($reservation));
-            \Mail::to('yumagoto287@gmail.com')->send(new ReservationSendmail($reservation));
-            
-            return redirect()->route('reservations.complete');
-            
+        $framePlanId = $selectedFrame->plans()->where('plan_id', $plan->id)->pluck('frame_plans.id')->first();
+
+        // 存在しない日付に書き換えた際のエラー
+        if ($framePlanId === null) {
+            return redirect()->route('reservations.top')->with('flash_delete', '予約不可能な日にちが含まれてい流ため、再度予約をしてください。');
+        }
+
+        $reservation = new Reservation();
+        $reservation->first_name = $data['first_name'];
+        $reservation->last_name = $data['last_name'];
+        $reservation->email = $data['email'];
+        $reservation->address = $data['address'];
+        $reservation->phone = $data['phone'];
+        $reservation->message = $data['message'];
+        $reservation->start_date = $data['start_date'];
+        $reservation->end_date = $data['end_date'];
+        $reservation->frame_plan_id = $framePlanId;
+        $reservation->save();
+
+        $selectedFrame->number -= 1;
+        $selectedFrame->save();
+
+        // 重複予約対策
+        $request->session()->regenerateToken();
+
+        // 予約完了メール
+        \Mail::to($request->email)->send(new ReservationSendmail($reservation));
+        \Mail::to('yumagoto287@gmail.com')->send(new ReservationSendmail($reservation));
+
+        return redirect()->route('reservations.complete');
     }
 
     public function complete()

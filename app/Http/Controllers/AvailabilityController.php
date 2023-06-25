@@ -41,10 +41,14 @@ class AvailabilityController extends Controller
 
                 if ($reservationCount === 0) {
                     $event['title'] = '×' . $price . '円';
+                    $event['color'] = 'black';
+                } elseif ($reservationCount === 1) {
+                    $event['title'] = '△' . $price . '円';
                     $event['color'] = 'red';
-                } elseif ($reservationCount < 3) {
+                } elseif ($reservationCount < 4) {
                     $event['title'] = '△' . $price . '円';
                     $event['color'] = 'yellow';
+                    $event['textColor'] = 'gray';
                 } else {
                     $event['title'] = '◯' . $price . '円';
                     $event['color'] = 'green';

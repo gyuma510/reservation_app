@@ -5,6 +5,46 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
     </script>
+    <style>
+        #color-legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .legend-color.black {
+            background-color: black;
+        }
+
+        .legend-color.red {
+            background-color: red;
+        }
+
+        .legend-color.yellow {
+            background-color: yellow;
+        }
+
+        .legend-color.green {
+            background-color: green;
+        }
+
+        .legend-label {
+            font-size: 14px;
+        }
+    </style>
 
 @section('title', '空室カレンダー')
 
@@ -66,6 +106,27 @@
             <div id='availability-calendar'></div>
         </div>
     </div>
+
+    {{-- 色表示の基準表記 --}}
+    <div id="color-legend">
+        <div class="legend-item">
+            <span class="legend-color black"></span>
+            <span class="legend-label">予約不可</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color red"></span>
+            <span class="legend-label">残り1室</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color yellow"></span>
+            <span class="legend-label">残り3室以下</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color green"></span>
+            <span class="legend-label">空きあり</span>
+        </div>
+    </div>
+
     <div class="text-center mt-5">
         <a href="{{ route('reservations.show', $plan->id) }}" class="btn btn-secondary">{{ __('プラン詳細へ戻る') }}</a>
     </div>
@@ -90,8 +151,8 @@
                     events: data,
                     eventColor: 'red',
                     eventTextColor: 'white',
-                    dateClick: function(info) {
-                        onCellClick(info.dateStr);
+                    eventClick: function(info) {
+                        onCellClick(info.event);
                     }
                 });
                 fullCalendar.render();
@@ -119,8 +180,8 @@
             events: '/availability/calendar-data?plan_id={{ $plan->id }}&room_type_id={{ $rooms[0]->id }}',
             eventColor: 'red',
             eventTextColor: 'white',
-            dateClick: function(info) {
-                onCellClick(info.dateStr);
+            eventClick: function(info) {
+                onCellClick(info.event);
             }
         });
         // カレンダーを描画
@@ -134,11 +195,14 @@
     });
 
     // 予約フォームに遷移する関数
-    function onCellClick(date) {
-        const plan_id = {{ $plan->id }};
-        const room_type_id = document.getElementById('room-type-selector').value;
-
-        window.location.href = `/reservations/create/${plan_id}/${room_type_id}?date=${date}`;
+    function onCellClick(event) {
+        // イベントが予約不可でない場合のみ、リダイレクトを行う
+        if (!event.title.includes('×')) {
+            const plan_id = {{ $plan->id }};
+            const room_type_id = document.getElementById('room-type-selector').value;
+            window.location.href = `/reservations/create/${plan_id}/${room_type_id}?date=${event.startStr}`;
+        }
     }
+
 </script>
 @endsection
