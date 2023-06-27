@@ -12,7 +12,9 @@
                 <div class="card-body">
                     <h5 class="card-title">予約が完了しました</h5>
                     <p class="card-text">
-                        宿泊予約が正常に完了しました。詳細な情報は登録したメールアドレスに送信されました。メールを確認してください。
+                        宿泊予約が正常に完了しました。<br>
+                        フォームに入力されたメールアドレスに予約確定メールを送信しました。<br>
+                        メールを確認してください。
                     </p>
                     <div class="d-flex justify-content-center">
                         <a href="{{ route('reservations.top') }}" class="btn btn-primary">トップに戻る</a>

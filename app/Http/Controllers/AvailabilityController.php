@@ -29,6 +29,11 @@ class AvailabilityController extends Controller
     
         // 予約枠を1つずつイベントに変換する
         foreach ($plan->frames as $frame) {
+            // 今日以前の予約枠はスキップする
+            if (strtotime($frame->date) < strtotime('today')) {
+                continue;
+            }
+    
             $rooms = $frame->room()->where('id', $room_type_id)->get();
             foreach ($rooms as $room) {
                 $event = [
@@ -38,7 +43,7 @@ class AvailabilityController extends Controller
                 ];
                 $price = $frame->pivot->price;
                 $reservationCount = $frame->number;
-
+    
                 if ($reservationCount === 0) {
                     $event['title'] = '×' . $price . '円';
                     $event['color'] = 'black';
@@ -58,5 +63,6 @@ class AvailabilityController extends Controller
         }
     
         return response()->json($events);
-    }    
+    }
+    
 }
