@@ -75,7 +75,7 @@
                 @if($plan->images->isEmpty())
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="{{ asset('images/nopicture.png') }}" class="d-block w-50" alt="No Picture">
+                            <img src="{{ asset('images/nopicture.png') }}" class="d-block w-100" alt="No Picture">
                         </div>
                     </div>
                 @else
@@ -87,7 +87,7 @@
                     <div class="carousel-inner">
                         @foreach($plan->images as $image)
                             <div class="carousel-item {{$loop->first ? 'active' : ''}}">
-                                <img src="{{ Storage::url($image->path) }}" class="d-block w-50">
+                                <img src="{{ Storage::url($image->path) }}" class="d-block w-100">
                             </div>
                         @endforeach
                     </div>

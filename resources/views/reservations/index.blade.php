@@ -14,7 +14,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="keyword">{{ __('キーワード') }}</label>
+                            <label for="keyword">キーワード</label>
                             <input id="keyword" type="text" class="form-control @error('keyword') is-invalid @enderror" name="keyword"
                                 placeholder="プラン名/プラン説明" value="{{ $keyword }}" autocomplete="keyword">
                             @error('keyword')
@@ -27,7 +27,7 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="start_date">{{ __('開始日時') }}</label>
+                            <label for="start_date">開始日時</label>
                             <input id="start_date" type="date" class="form-control @error('start_date') is-invalid @enderror" name="start_date"
                                 value="{{ $start_date ?? '' }}" autocomplete="start_date">
                             @error('start_date')
@@ -40,7 +40,7 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="end_date">{{ __('終了日時') }}</label>
+                            <label for="end_date">終了日時</label>
                             <input id="end_date" type="date" class="form-control @error('end_date') is-invalid @enderror" name="end_date"
                                 value="{{ $end_date ?? '' }}" autocomplete="end_date">
                             @error('end_date')
@@ -53,8 +53,8 @@
                 </div>
 
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary">{{ __('検索') }}</button>
-                    <a href="{{ route('reservations.index') }}" class="btn btn-secondary">{{ __('検索リセット') }}</a>
+                    <button type="submit" class="btn btn-primary">検索</button>
+                    <a href="{{ route('reservations.index') }}" class="btn btn-primary">リセット</a>
                 </div>
             </form>
 
@@ -79,7 +79,7 @@
                                     @if($plan->images->isEmpty())
                                         <div class="carousel-inner">
                                             <div class="carousel-item active">
-                                                <img src="{{ asset('images/nopicture.png') }}" class="d-block w-50" alt="No Picture">
+                                                <img src="{{ asset('images/nopicture.png') }}" class="d-block w-100" alt="No Picture">
                                             </div>
                                         </div>
                                     @else
@@ -91,7 +91,7 @@
                                         <div class="carousel-inner">
                                             @foreach($plan->images as $image)
                                                 <div class="carousel-item {{$loop->first ? 'active' : ''}}">
-                                                    <img src="{{ Storage::url($image->path) }}" class="d-block w-50">
+                                                    <img src="{{ Storage::url($image->path) }}" class="d-block w-100">
                                                 </div>
                                             @endforeach
                                         </div>

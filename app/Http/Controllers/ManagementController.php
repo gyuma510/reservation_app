@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Frame;
-use App\Models\Plan;
-use App\Models\FramePlan;
-use App\Models\Reservation;
 use App\Mail\Cancelmail;
+use App\Models\Frame;
+use App\Models\FramePlan;
+use App\Models\Plan;
+use App\Models\Reservation;
 use Carbon\Carbon;
 
 class ManagementController extends Controller
@@ -18,27 +18,27 @@ class ManagementController extends Controller
 
         $now = \Carbon\Carbon::now();
 
-        // 日付ショートカット検索の定義
+        // 日付ショートカット検索
         $shortcut = [
             '今日' => $now->format('Y-m-d'),
             '明日' => $now->addDay()->format('Y-m-d'),
             '明後日' => $now->addDay()->format('Y-m-d'),
         ];
 
-        // キーワードを取得
+        // キーワード取得
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
         $start_date_shortcut = $request->input('start_date_shortcut');
 
 
-        // 日付ショートカット検索が選択された場合、開始日時を上書きする
+        // 日付ショートカット検索が選択された場合、開始日時を上書き
         if (!empty($start_date_shortcut)) {
             $start_date = $start_date_shortcut;
         } elseif (!empty($request->input('start_date_input'))) {
             $start_date = $request->input('start_date_input');
         }
 
-        // 検索クエリを作成する
+        // 検索クエリ作成
         $query = Reservation::query();
         if (!empty($start_date)) {
             $query->where('start_date', '=', $start_date);
@@ -57,11 +57,9 @@ class ManagementController extends Controller
             'start_date_shortcut' => $start_date_shortcut,
             'date_shortcut' => $shortcut,
         ]);
-
-        // return view('admin.managements.index', compact('reservations'));
     }
 
-    public function show(string $id)
+    public function show($id)
     {
         $reservation = Reservation::find($id);
 

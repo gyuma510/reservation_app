@@ -11,7 +11,7 @@
                             @csrf
                             @method('PUT')
 
-                            <div class="form-group row">
+                            <div class="form-group row mt-3">
                                 <label for="title" class="col-md-4 col-form-label text-md-right">プラン名<span class="badge bg-danger ml-1">必須</span></label>
                                 <div class="col-md-6">
                                     <input id="title" type="text"
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row mt-3">
                                 <label for="description" class="col-md-4 col-form-label text-md-right">プラン説明<span class="badge bg-danger ml-1">必須</span></label>
                                 <div class="col-md-6">
                                     <textarea id="description" type="text" class="form-control @error('description') is-invalid @enderror"
@@ -42,7 +42,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row mt-3">
                                 <label for="images" class="col-md-4 col-form-label text-md-right">写真1</label>
 
                                 <div class="col-md-6">
@@ -58,7 +58,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row mt-3">
                                 <label for="images" class="col-md-4 col-form-label text-md-right">写真2</label>
                                 <div class="col-md-6">
                                     <input id="images" type="file"
@@ -73,7 +73,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row mt-3">
                                 <label for="images" class="col-md-4 col-form-label text-md-right">写真3</label>
                                 <div class="col-md-6">
                                     <input id="images" type="file"
@@ -88,7 +88,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row mt-3">
                                 <label for="min_price" class="col-md-4 col-form-label text-md-right">プランの最小の値段<span class="badge bg-danger ml-1">必須</span></label>
                                 <div class="col-md-6">
                                     <input id="min_price" type="number"
@@ -105,7 +105,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row mt-3">
                                 <label for="max_price" class="col-md-4 col-form-label text-md-right">プランの最大の値段<span class="badge bg-danger ml-1">必須</span></label>
                                 <div class="col-md-6">
                                     <input id="max_price" type="number"
@@ -122,7 +122,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-3">
                                 <label for="start_date">開始日<span class="badge bg-danger ml-1">必須</span></label>
                                 <input id="start_date" type="date"
                                     class="form-control @error('start_date') is-invalid @enderror" name="start_date"
@@ -133,7 +133,7 @@
                                     </span>
                                 @enderror
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mt-3">
                                 <label for="end_date">終了日<span class="badge bg-danger ml-1">必須</span></label>
                                 <input id="end_date" type="date"
                                     class="form-control @error('end_date') is-invalid @enderror" name="end_date"
@@ -144,27 +144,37 @@
                                     </span>
                                 @enderror
                             </div>
-                            @foreach ($frames as $frame)
-                                <div class="form-group row">
-                                    <label for="frame_price_{{ $frame->id }}" class="col-md-4 col-form-label text-md-right">
-                                        予約枠ごとの値段{{ $frame->date }}<span class="badge bg-danger ml-1">必須</span>
-                                    </label>
-                                    <div class="col-md-6">
-                                        <input id="frame_price_{{ $frame->id }}" type="number"
-                                            class="form-control @error('frame_prices.' . $frame->id) is-invalid @enderror"
-                                            name="frame_prices[{{ $frame->id }}]" placeholder="例:8000(半角数字で入力)"
-                                            value="{{ old('frame_prices.' . $frame->id, $frame->plans->firstWhere('id', $plan->id)->pivot->price ?? '') }}"
- required
-                                            autocomplete="frame_prices.{{ $frame->id }}">
-
-                                        @error('frame_prices.' . $frame->id)
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
+                            <div class="row mt-3">
+                                <div class="col text-center">
+                                    <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#framePriceCollapse" aria-expanded="false" aria-controls="framePriceCollapse">
+                                        期間毎の料金を設定
+                                    </button>
                                 </div>
-                            @endforeach
+                            </div>
+                            <div class="card mt-3 collapse" id="framePriceCollapse">
+                                <div class="card-body">
+                                    @foreach ($frames as $frame)
+                                        <div class="form-group row mt-3">
+                                            <label for="frame_price_{{ $frame->id }}" class="col-md-4 col-form-label text-md-right">
+                                                予約枠ごとの値段{{ $frame->date }}<span class="badge bg-danger ml-1">必須</span>
+                                            </label>
+                                            <div class="col-md-6">
+                                                <input id="frame_price_{{ $frame->id }}" type="number"
+                                                    class="form-control @error('frame_prices.' . $frame->id) is-invalid @enderror"
+                                                    name="frame_prices[{{ $frame->id }}]" placeholder="例:8000(半角数字で入力)"
+                                                    value="{{ old('frame_prices.' . $frame->id, $frame->plans->firstWhere('id', $plan->id)->pivot->price ?? '') }}"
+                                                    required autocomplete="frame_prices.{{ $frame->id }}">
+
+                                                @error('frame_prices.' . $frame->id)
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                             <div class="d-flex justify-content-center mt-3">
                                 <button type="submit" class="btn btn-primary">
                                     更新

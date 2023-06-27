@@ -10,7 +10,6 @@ class Contact extends Model
     use HasFactory;
     protected $guarded = ['id'];
 
-    // リレーション
     public function status()
     {
         return $this->hasOne(Status::class);

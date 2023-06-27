@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Frame;
-use App\Models\Room;
-use App\Models\Plan;
-use App\Models\FramePlan;
-use App\Models\Reservation;
-use App\Mail\ReservationSendmail;
-use Illuminate\Http\Request;
 use App\Http\Requests\ReservationController\StoreRequest;
+use App\Mail\ReservationSendmail;
+use App\Models\Frame;
+use App\Models\FramePlan;
+use App\Models\Plan;
+use App\Models\Reservation;
+use App\Models\Room;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Carbon\Carbon;
 
@@ -82,19 +82,26 @@ class ReservationController extends Controller
         $startDate = Carbon::parse($data['start_date']);
         $endDate = Carbon::parse($data['end_date']);
     
-        $frames = Frame::where('date', '>=', $startDate)
-            ->where('date', '<=', $endDate)
-            ->get();
-
+        // 各日付チェック
+        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+            $frameExists = Frame::where('date', $date->toDateString())
+                ->where('room_id', $frame->room_id)
+                ->first();
+    
+            if (!$frameExists) {
+                return back()->with('flash_delete', '予約不可能な日にちが含まれています。再度予約をしてください。');
+            }
+        }
+    
         // 存在しない日付に書き換えた際のエラー
         if ($framePlanId === null) {
-            return  back()->with('flash_delete', '予約不可能な日にちが含まれています。');
+            return  back()->with('flash_delete', '予約不可能な日にちが含まれています。再度予約をしてください。');
         }
     
         $pricePerDay = $frame->plans()->where('plan_id', $plan->id)->value('price');
         $totalDays = $endDate->diffInDays($startDate);
         $totalPrice = $pricePerDay * $totalDays;
-        
+    
         return view('reservations.confirm', [
             'plan' => $plan,
             'frame' => $frame,
@@ -130,7 +137,7 @@ class ReservationController extends Controller
 
         // 存在しない日付に書き換えた際のエラー
         if ($framePlanId === null) {
-            return redirect()->route('reservations.top')->with('flash_delete', '予約不可能な日にちが含まれてい流ため、再度予約をしてください。');
+            return redirect()->route('reservations.top')->with('flash_delete', '予約不可能な日にちが含まれているため、再度予約をしてください。');
         }
 
         $reservation = new Reservation();

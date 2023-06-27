@@ -10,7 +10,6 @@ class Status extends Model
     use HasFactory;
     protected $fillable = ['contact_id'];
 
-    // リレーション
     public function contact()
     {
         return $this->belongsTo(Contact::class);

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Plan;
 use App\Models\Frame;
+use App\Models\Plan;
 use App\Models\Room;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

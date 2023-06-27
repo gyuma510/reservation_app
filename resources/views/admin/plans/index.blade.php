@@ -7,8 +7,7 @@
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
-                    <tr>
-                        <th>ID</th>
+                    <tr class="text-center align-middle">
                         <th>タイトル</th>
                         <th>値段</th>
                         <th>期間</th>
@@ -20,17 +19,16 @@
                 </thead>
                 <tbody>
                     @foreach ($plans as $plan)
-                        <tr style="max-height: 100px; overflow: hidden;">
-                            <td>{{ $plan->id }}</td>
+                        <tr style="max-height: 100px; overflow: hidden;"class="text-center align-middle">
                             <td>{{ $plan->title }}</td>
-                            <td>{{ $plan->min_price }}~{{ $plan->max_price }}</td>
-                            <td>{{ $plan->start_date }}~{{ $plan->end_date }}</td>
+                            <td>{{ $plan->min_price }}~{{ $plan->max_price }}円</td>
+                            <td>{{ date('Y年m月d日', strtotime($plan->start_date)) }} ~ {{ date('Y年m月d日', strtotime($plan->end_date)) }}</td>
                             <td>
                                 @if ($plan->images->isEmpty())
-                                    <img src="{{ asset('images/nopicture.png') }}" width="100" alt="No Picture">
+                                    <img src="{{ asset('images/nopicture.png') }}" class="img-fluid" style="width:150px; height:auto;" alt="No Picture">
                                 @else
                                     @foreach($plan->images as $image)
-                                        <img src="{{ Storage::url($image->path) }}" width="100">
+                                        <img src="{{ Storage::url($image->path) }}" class="img-fluid" style="width:150px; height:auto;">
                                     @endforeach
                                 @endif
                             </td>

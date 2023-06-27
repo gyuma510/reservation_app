@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\PlanController\StoreRequest;
 use App\Http\Requests\PlanController\UpdateRequest;
-use App\Models\Plan;
-use App\Models\Image;
 use App\Models\Frame;
+use App\Models\Image;
+use App\Models\Plan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -50,10 +50,10 @@ class PlanController extends Controller
             $plan->frames()->attach($frame->id, ['price' => $price]);
         }
 
-        return redirect()->route('admin.plans.index')->with('flash_message', '宿泊プランを登録しました');
+        return redirect()->route('plans.index')->with('flash_message', '宿泊プランを登録しました');
     }
 
-    public function show(string $id)
+    public function show($id)
     {
         $plan = Plan::with(['frames' => function ($query) {
             $query->orderBy('date');
@@ -62,7 +62,7 @@ class PlanController extends Controller
         return view('admin.plans.show', compact('plan'));
     }    
 
-    public function edit(string $id)
+    public function edit($id)
     {
         $plan = Plan::find($id);
         $frames = Frame::with('plans')->orderBy('date')->get();
@@ -70,7 +70,7 @@ class PlanController extends Controller
         return view('admin.plans.edit', compact('plan', 'frames'));
     }    
 
-    public function update(UpdateRequest $request, string $id)
+    public function update(UpdateRequest $request, $id)
     {
         $plan = Plan::find($id);
         $plan->title = $request->title;
@@ -95,10 +95,10 @@ class PlanController extends Controller
             $plan->frames()->syncWithoutDetaching([$frame->id => ['price' => $price]]);
         }
 
-        return redirect()->route('admin.plans.index')->with('flash_message', '宿泊プランを編集しました');
+        return redirect()->route('plans.index')->with('flash_message', '宿泊プランを編集しました');
     }
 
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $plan = Plan::find($id);
 
@@ -109,6 +109,6 @@ class PlanController extends Controller
         }
         $plan->delete();
 
-        return redirect()->route('admin.plans.index')->with('flash_delete', '宿泊プランを削除しました');
+        return redirect()->route('plans.index')->with('flash_delete', '宿泊プランを削除しました');
     }
 }

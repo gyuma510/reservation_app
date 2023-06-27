@@ -19,11 +19,11 @@ return new class extends Migration
             $table->string('email');
             $table->string('address');
             $table->string('phone');
-            $table->text('message');
+            $table->text('message')->nullable();
             $table->date('start_date');
             $table->date('end_date');
             $table->boolean('cancel');
-            $table->text('memo');
+            $table->text('memo')->nullable();
             $table->timestamps();
         });
     }
