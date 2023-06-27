@@ -37,7 +37,7 @@
                                     @foreach ($frames as $frame)
                                         <tr>
                                             <th scope="row">{{ $frame->id }}</th>
-                                            <td>{{ $frame->date }}</td>
+                                            <td>{{ date('Y年m月d日', strtotime($frame->date)) }}</td>
                                             <td>{{ $frame->number }}</td>
                                             <td>
                                                 <a href="{{ route('frames.edit', $frame->id) }}"

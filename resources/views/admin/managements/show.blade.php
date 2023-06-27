@@ -28,7 +28,7 @@
                     <td class = "text-nowrap align-middle" style="width: 150px;">{{ $reservation->phone }}</td>
                     <td class = "text-nowrap align-middle" style="width: 300px;">{{ $reservation->address }}</td>
                     <td class = "text-nowrap align-middle" style="width: 300px;">{{ $reservation->message }}</td>
-                    <td class = "text-nowrap align-middle" style="width: 100px;">{{ $reservation->framePlan->plan->title }}</td>
+                    <td class = "text-nowrap align-middle" style="width: 100px;">{{ $reservation->framePlan->plan->title ?? '' }}</td>
                     <td class = "text-nowrap align-middle" style="width: 100px;">{{ date('Y/m/d', strtotime($reservation->start_date)) }}</td>
                     <td class = "text-nowrap align-middle" style="width: 100px;">{{ date('Y/m/d', strtotime($reservation->end_date)) }}</td>
                     <td class = "text-nowrap align-middle" style="width: 100px;">{{ date('Y/m/d  H:m', strtotime($reservation->created_at)) }}</td>
